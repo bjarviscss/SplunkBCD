@@ -1,0 +1,276 @@
+<form hideSplunkBar="true" hideFooter="true">
+  <label>Top Polluters (CPU, Mem, Disk)</label>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="time1" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="origin" searchWhenChanged="true">
+      <label>Origin</label>
+      <fieldForLabel>origin</fieldForLabel>
+      <fieldForValue>origin</fieldForValue>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <search>
+        <query>index=bcd sourcetype=alarms
+| dedup origin
+| table origin</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="sev_tok" searchWhenChanged="true">
+      <label>Severity</label>
+      <choice value="*">All</choice>
+      <choice value="critical">Critical</choice>
+      <choice value="major">Major</choice>
+      <choice value="minor">Minor</choice>
+      <choice value="warning">Warning</choice>
+      <choice value="information">Information</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Top Polluters - All</title>
+      <chart>
+        <search>
+          <query>index=bcd sourcetype=alarms prid=cdm  origin=$origin$ subsys IN ( "CPU","Disk","Memory") Disk OR CPU OR Memory severity=$sev_tok$ 
+| timechart count by subsys</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <!-- disable all panel links -->
+        <option name="link.visible">false</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>TP - CDM - By origin</title>
+      <chart>
+        <search>
+          <query>index=bcd sourcetype=alarms prid=cdm  origin=$origin$ subsys IN ("Memory","Disk","CPU") OR Disk OR Memory OR CPU severity=$sev_tok$ 
+| timechart count by origin</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <!-- disable all panel links -->
+        <option name="link.visible">false</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>TP - CPU</title>
+      <table>
+        <search>
+          <query>index=bcd sourcetype=alarms origin=$origin$ prid=cdm subsys IN ("CPU") severity=$sev_tok$ 
+| stats count sparkline(count) as trend by hostname
+| sort -count limit=5</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- disable all panel links -->
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="link.visible">0</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition match="'select_title' == '$click.name$">
+            <unset token="select_value"></unset>
+            <unset token="select_base"></unset>
+          </condition>
+          <condition>
+            <set token="select_value">CPU</set>
+            <set token="select_base">subsys</set>
+            <set token="select_title">$click.name$</set>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>TP - Memory</title>
+      <table>
+        <search>
+          <query>index=bcd   origin=$origin$ prid=cdm subsys IN ("Memory") severity=$sev_tok$ 
+| stats count sparkline(count) as trend by hostname
+| sort -count limit=5</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- disable all panel links -->
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="link.visible">0</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition match="'select_title' == '$click.name$'">
+            <unset token="select_value"></unset>
+            <unset token="select_base"></unset>
+          </condition>
+          <condition>
+            <set token="select_value">Memory</set>
+            <set token="select_base">subsys</set>
+            <set token="select_title">$click.name$</set>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>TP - Disk</title>
+      <table>
+        <search>
+          <query>index=bcd sourcetype=alarms origin=$origin$ prid=cdm subsys IN ("Disk") severity=$sev_tok$ 
+| stats count sparkline(count) as trend by hostname
+| sort -count limit=5</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- disable all panel links -->
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="link.visible">0</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition match="'select_title' == '$click.name$">
+            <unset token="select_value"></unset>
+            <unset token="select_base"></unset>
+          </condition>
+          <condition>
+            <set token="select_value">Disk</set>
+            <set token="select_base">subsys</set>
+            <set token="select_title">$click.name$</set>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$select_value$">
+      <title>Alarms by $select_value$</title>
+      <input type="checkbox" token="select_value" searchWhenChanged="true">
+        <label>Show All</label>
+        <choice value="&quot;Memory&quot;,&quot;Disk&quot;,&quot;CPU&quot;">All</choice>
+      </input>
+      <table>
+        <search>
+          <progress>
+            <condition match="'job.resultCount' &gt; 0">
+              <set token="panel_show">true</set>
+            </condition>
+            <condition>
+              <unset token="panel_show"></unset>
+            </condition>
+          </progress>
+          <query>index=bcd sourcetype=alarms prid=cdm $select_base$ IN ("$select_value$") severity=$sev_tok$ 
+| dedup nimid 
+| eval current_state=if(severity="clear","CLOSED","OPEN") 
+| eval opentime=if(current_state="OPEN",(now() - round(strptime(nimts,"%Y-%m-%d %H:%M:%S.%N"),0)),(round(strptime(time,"%Y-%m-%d %H:%M:%S"),0)-round(strptime(nimts,"%Y-%m-%d %H:%M:%S"),0))) 
+| eval opentime=tostring(opentime, "duration") 
+| eval created=substr(nimts, 1, len(nimts)-2) 
+| sort -nimts 
+| eval closed=if(current_state=="CLOSED",substr(time, 1, len(time)-2),"STILLOPEN")  
+| table nimid,severity,current_state,created,closed, opentime, hostname, subsys, suppcount,message</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
