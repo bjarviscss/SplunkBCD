@@ -1,0 +1,105 @@
+<form hideSplunkBar="true" hideFooter="true">
+  <label>Alarms by Subsystem</label>
+  <search>
+    <query>index=bcd sourcetype=alarms origin=$origin$ subsys=$subsys_rt$  |dedup nimid | fillnull value=STILLOPEN closed 
+| eval nimstate=if(closed="STILLOPEN","OPEN","CLOSED") |where nimstate=$nimstate$ |sort + created |table nimid,created,closed,hostname, nimstate, subsys, message|stats count|table count</query>
+    <earliest>-24h@h</earliest>
+    <latest>now</latest>
+    <done>&gt;<set token="total1">$result.count$</set>
+    </done>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="time1" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="origin" searchWhenChanged="true">
+      <label>Origin</label>
+      <fieldForLabel>origin</fieldForLabel>
+      <fieldForValue>origin</fieldForValue>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <search>
+        <query>index=bcd sourcetype=alarms
+| dedup origin
+| table origin</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="severity" searchWhenChanged="true">
+      <label>Severity</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>severity</fieldForLabel>
+      <fieldForValue>severity</fieldForValue>
+      <search>
+        <query>index=bcd  sourcetype=alarms
+| table severity
+| dedup severity</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="subsys_rt">
+      <label>Subsys</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>subsys</fieldForLabel>
+      <fieldForValue>subsys</fieldForValue>
+      <search>
+        <query>index=bcd sourcetype=alarms origin="$origin$" severity=$severity$ | stats count by subsys</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="radio" token="nimstate">
+      <label>Open or Closed</label>
+      <choice value="&quot;OPEN&quot;">OPEN</choice>
+      <choice value="&quot;CLOSED&quot;">CLOSED</choice>
+      <default>"OPEN"</default>
+      <initialValue>"OPEN"</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Alarms by Created time</title>
+      <table>
+        <search>
+          <query>index=bcd sourcetype=alarms origin="$origin$" subsys=$subsys_rt$  severity=$severity$
+| dedup nimid 
+| eval current_state=if(severity="clear","CLOSED","OPEN") 
+| where current_state=$nimstate$
+| eval opentime=if(current_state="OPEN",(now() - round(strptime(nimts,"%Y-%m-%d %H:%M:%S.%N"),0)),(round(strptime(time,"%Y-%m-%d %H:%M:%S"),0)-round(strptime(nimts,"%Y-%m-%d %H:%M:%S"),0))) 
+| eval opentime=tostring(opentime, "duration") 
+| eval created=substr(nimts, 1, len(nimts)-2) 
+| sort -nimts 
+| eval closed=if(current_state=="CLOSED",substr(time, 1, len(time)-2),"STILLOPEN") 
+| table nimid,created, severity, closed,opentime,hostname, current_state, subsys, suppcount,message, assigned_to, acknowledged_by origin</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- selectively disable each of the links -->
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
