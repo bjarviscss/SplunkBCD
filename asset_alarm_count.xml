@@ -1,0 +1,282 @@
+<form hideSplunkBar="true" hideFooter="true">
+  <label>Asset  Alarm Count</label>
+  <description>With Alarm data</description>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="time1" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>@h</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="origin" searchWhenChanged="true">
+      <label>Origin</label>
+      <fieldForLabel>origin</fieldForLabel>
+      <fieldForValue>origin</fieldForValue>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <search>
+        <query>index=bcd sourcetype=alarms
+| dedup origin
+| table origin</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Alarms Open (with duplicates)</title>
+      <single>
+        <search>
+          <query>index=bcd sourcetype=alarms severity!=clear  origin=$origin$
+|stats count</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">OPEN</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+        <!-- selectively disable each of the links -->
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Alarms Closed (with duplicates)</title>
+      <single>
+        <search>
+          <query>index=bcd sourcetype=alarms severity=clear  origin=$origin$
+|stats count</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Closed</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+        <!-- selectively disable each of the links -->
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Assets with Alarms OPEN</title>
+      <single>
+        <search>
+          <query>index=bcd sourcetype=alarms  severity!=clear  origin=$origin$
+| dedup hostname
+|stats count(hostname)</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Hosts</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+        <!-- selectively disable each of the links -->
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Assets with Alarms CLOSED</title>
+      <single>
+        <search>
+          <query>index=bcd sourcetype=alarms  severity=clear  origin=$origin$
+| dedup hostname
+|stats count(hostname)</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Hosts</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+        <!-- selectively disable each of the links -->
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Alarms by origin (with duplicates)</title>
+      <table>
+        <search>
+          <query>index=bcd sourcetype=alarms origin=$origin$   | stats count as "Alarm Total" sparkline(count) as "Alarm"   by origin</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- selectively disable each of the links -->
+        <option name="count">20</option>
+        <option name="dataOverlayMode">highlow</option>
+        <option name="drilldown">none</option>
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Alarms by Severity transaction (with duplicates)</title>
+      <table>
+        <search>
+          <query>index=bcd sourcetype=alarms origin="$origin$" severity!=clear| stats count as "Alarm Total" sparkline(count) as "Alarm" BY level,severity | sort - level | fields - level | rename severity as Severity</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- selectively disable each of the links -->
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/bcd_demo/alarm_by_subsystem?severity=$click.value2$&amp;form.usertag_tok=$usertag_tok$&amp;form.time1.earliest=$time1.earliest$&amp;form.group=$group$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Alarms by Type (with duplicates)</title>
+        <search>
+          <query>index=bcd sourcetype=alarms   origin=$origin$    | stats count by subsys|sort -count</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <!-- selectively disable each of the links -->
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.02</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="link.exportResults.visible">1</option>
+        <option name="link.inspectSearch.visible">0</option>
+        <option name="link.openPivot.visible">0</option>
+        <option name="link.openSearch.visible">0</option>
+        <option name="link.visible">1</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+</form>
